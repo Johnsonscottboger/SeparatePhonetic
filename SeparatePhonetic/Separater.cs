@@ -40,7 +40,7 @@ namespace SeparatePhonetic
         {
             if(string.IsNullOrWhiteSpace(phonetic))
                 throw new ArgumentNullException(nameof(phonetic));
-            var notPhoneticRegex = new Regex(@"[^a-zA-Z ]+");
+            var notPhoneticRegex = new Regex(@"[^a-zA-Z '’]+");
             if(notPhoneticRegex.IsMatch(phonetic))
             {
                 throw new ArgumentException("输入的参数不是有效的拼音字母");
@@ -74,7 +74,7 @@ namespace SeparatePhonetic
 
             var index = 0;
             var dict = GetCharTypeDictionary();
-            while(index < this.Phonetic.Length)
+            while(index < dict.Count)
             {
                 list.Clear();
                 builder.Clear();
@@ -157,38 +157,44 @@ namespace SeparatePhonetic
             };
 
             var dict = new Dictionary<int,Tuple<CharType,string>>();
-            var length = this.Phonetic.Length;
-            var index = 0;
-            for(; index < length; index++)
+            
+            var splitArray = this.Phonetic.Split(new char[] { '\'','’' },StringSplitOptions.RemoveEmptyEntries);
+            foreach(var s in splitArray)
             {
-                var allSubStrings = GetSubString(this.Phonetic,index);
-                foreach(var subString in allSubStrings)
+                var index = 0;
+                var length = s.Length;
+                var dictCount = dict.Count;
+                for(; index < length; index++)
                 {
-                    if(IsInitials(subString))
+                    var currentIndex = dictCount + index;
+                    var allSubStrings = GetSubString(s,index);
+                    foreach(var subString in allSubStrings)
                     {
-                        if(dict.ContainsKey(index))
+                        if(IsInitials(subString))
                         {
-                            dict[index] = new Tuple<CharType,string>(CharType.Initials,subString);
+                            if(dict.ContainsKey(currentIndex))
+                            {
+                                dict[currentIndex] = new Tuple<CharType,string>(CharType.Initials,subString);
+                            }
+                            else
+                            {
+                                dict.Add(currentIndex,new Tuple<CharType,string>(CharType.Initials,subString));
+                            }
                         }
-                        else
+                        else if(IsVowels(subString))
                         {
-                            dict.Add(index,new Tuple<CharType,string>(CharType.Initials,subString));
-                        }
-                    }
-                    else if(IsVowels(subString))
-                    {
-                        if(dict.ContainsKey(index))
-                        {
-                            dict[index] = new Tuple<CharType,string>(CharType.Vowels,subString);
-                        }
-                        else
-                        {
-                            dict.Add(index,new Tuple<CharType,string>(CharType.Vowels,subString));
+                            if(dict.ContainsKey(currentIndex))
+                            {
+                                dict[currentIndex] = new Tuple<CharType,string>(CharType.Vowels,subString);
+                            }
+                            else
+                            {
+                                dict.Add(currentIndex,new Tuple<CharType,string>(CharType.Vowels,subString));
+                            }
                         }
                     }
                 }
             }
-
             return dict;
         }
     }
