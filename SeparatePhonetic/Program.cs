@@ -10,7 +10,7 @@ namespace SeparatePhonetic
     {
         static void Main(string[] args)
         {
-            var list = new List<string>() { "huangzhuanga","aanghahaohuang","tian'gaorenniaofei","haineicunzhiji","nichifanlema" };
+            var list = new List<string>() { "huangzhuanga","aanghahaohuang","tian'gaorenniaofei","haineicunzhiji","nichifanlema","changao","chan'gao" };
 
             foreach(var phonetic in list)
             {

@@ -28,6 +28,13 @@ namespace SeparatePhonetic
             "ang","eng","ing","ong"
         };
 
+        /// <summary>
+        /// 单韵母，单韵母之后可再跟韵母
+        /// </summary>
+        private static List<string> _sigleVowels = new List<string>()
+        {
+            "a","e","i","o","u","v"
+        };
 
         /// <summary>
         /// 拼音字符串
@@ -94,17 +101,20 @@ namespace SeparatePhonetic
                     list.Add(dict[index]);
                     index += vowels1 == null ? 0 : vowels1.Length;
 
-                    if(index < dict.Count && dict[index].Item1 == CharType.Vowels)
+                    if(_sigleVowels.Any(p => p == vowels1))
                     {
-                        //获取第二个韵母
-                        var vowels2 = dict[index].Item2;
-                        list.Add(dict[index]);
-                        index += vowels2 == null ? 0 : vowels2.Length;
+                        if(index < dict.Count && dict[index].Item1 == CharType.Vowels)
+                        {
+                            //获取第二个韵母
+                            var vowels2 = dict[index].Item2;
+                            list.Add(dict[index]);
+                            index += vowels2 == null ? 0 : vowels2.Length;
+                        }
                     }
                 }
 
                 //如果都是韵母，拆开
-                if(list.All(p=>p.Item1 == CharType.Vowels))
+                if(list.All(p => p.Item1 == CharType.Vowels))
                 {
                     foreach(var item in list)
                     {
@@ -124,7 +134,7 @@ namespace SeparatePhonetic
             return phoneticList;
         }
 
-        
+
         /// <summary>
         /// 获取拼音字典
         /// </summary>
@@ -157,7 +167,7 @@ namespace SeparatePhonetic
             };
 
             var dict = new Dictionary<int,Tuple<CharType,string>>();
-            
+
             var splitArray = this.Phonetic.Split(new char[] { '\'','’' },StringSplitOptions.RemoveEmptyEntries);
             foreach(var s in splitArray)
             {
